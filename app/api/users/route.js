@@ -1,8 +1,14 @@
-import { users } from "@/app/data/users";
+import { createUser, getUsers } from "@/app/lib/users";
 import { validateUserInput } from "./validation";
 
 export async function GET() {
-  return Response.json(users);
+  try {
+    const users = await getUsers();
+    return Response.json(users);
+  } catch (error) {
+    console.error("GET /api/users failed:", error);
+    return Response.json({ error: "Could not load users." }, { status: 500 });
+  }
 }
 
 export async function POST(request) {
@@ -13,9 +19,11 @@ export async function POST(request) {
     return Response.json({ error: validated.error }, { status: 400 });
   }
 
-  const { name, imageUrl, description } = validated;
-  const newUser = { id: crypto.randomUUID(), name, imageUrl, description };
-  users.push(newUser);
-
-  return Response.json(newUser, { status: 201 });
+  try {
+    const newUser = await createUser(validated);
+    return Response.json(newUser, { status: 201 });
+  } catch (error) {
+    console.error("POST /api/users failed:", error);
+    return Response.json({ error: "Could not create user." }, { status: 500 });
+  }
 }
