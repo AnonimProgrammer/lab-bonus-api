@@ -38,6 +38,10 @@ export default function Home() {
     setUsers((current) => [...current, newUser]);
   }
 
+  function handleDeleted(id) {
+    setUsers((current) => current.filter((user) => user.id !== id));
+  }
+
   return (
     <div className="min-h-full bg-zinc-50 px-6 py-16 dark:bg-black">
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-10">
@@ -78,7 +82,11 @@ export default function Home() {
             {!loading && !error && users.length > 0 && (
               <div className="grid gap-6 sm:grid-cols-2">
                 {users.map((user) => (
-                  <UserCard key={user.id} user={user} />
+                  <UserCard
+                    key={user.id}
+                    user={user}
+                    onDeleted={handleDeleted}
+                  />
                 ))}
               </div>
             )}
